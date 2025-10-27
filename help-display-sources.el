@@ -20,8 +20,6 @@
 
 ;;; Commentary:
 
-;; 
-
 ;;; Code:
 
 ;;; Customize
@@ -49,7 +47,7 @@
          (with-silent-modifications
            (save-excursion ,@body))))))
 
-;;; Adviced functions
+;;; Advised functions
 
 (defun helper--describe-symbol (fn &rest args)
   (apply fn args)
@@ -77,7 +75,7 @@
       (let ((src (helper--source-fn)))
         (when src (insert "\n" src))))))
 
-;;; Views
+;;; Fetchers
 (defun helper--fetch-c-src (symbol type file)
   (let (src beg)
     (setq file (expand-file-name file source-directory))
