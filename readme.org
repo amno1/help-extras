@@ -1,0 +1,56 @@
+* About
+
+A collection of small utilities that enhance the experience of the built-in `help-mode' in GNU Emacs. Each utility is available to use on its own, and they depend on either each other or any external library. Each one is a minimal and self-contained feature depending only on the built-in features.
+
+
+* Included utilities:
+
+** Help-remote
+
+Help remote is a "remote control" for help buffer. It let's you manipulate help buffer from any other buffer, without having to jump back and forth between the help buffer and the other buffer you are in. Useful when you want to navigage the help-buffer history, scroll the buffer, follow a link etc.
+
+** Help-menu
+
+Display the help context menu in non-overlapping window in style of Transient (without using Transient). Unlike Transient which require explicit declaration of menus, this displays the built-in context menus, but in a non-overlapping window similar to Transient or Whichkey. Thus, it provides for the consistency between between the menu in menubar and the pop-up menu, but displayed in a popular non-overlapping "window menu" style as practicised by Transient and Whichkey.
+
+** Help-display-sources
+
+Inspired by [[https://github.com/Wilfred/helpful][Helpful]], help-display-sources is a minimal mode that adds ability to the built-in help-buffer to display the source code of the function or a variable it refers to.
+
+This feature was helpful to me when I was learning Emacs Lisp. It is probably more convenient to use xref and just pres M-. and M-, to jump back and forth in the source code, if you really want to explore the source code. However, the Helpful feature was in its own very didactic to me. Simply seing the sources when I was looking up references thought me a lot about Emacs. These days, I don't actually use this, but I remember how surprised I was sometimes to see how simple implementation was for some forms I thought were complicated to implement, and vice versa.
+
+In a private implementation I used for a while, I was able to set a variable to fetch only Lisp sources or both Lisp and C, however, to make it simpler and leaner before for this release I have removed that functionality. It was also possible to choose if you would prefer to display source code, symbol properties or dissasembly code, but I don't use that much if at all, so I have removed it.
+
+To use call:
+
+M-x help-display-source-mode RET
+
+That will toggle on/off the source code display.
+
+There is no custom variables to configure. However, `source-directory' has to be configured properly to the folder wchich contains Emacs source code. Observe also that displaying C sources is not as fast as displaying Lisp sources, and that you have to have Emacs source code somewhere on your computer. If it is too slow for you, don't use this feature.
+
+** Help-dissasemble
+
+Another feature inspired by Helpful. Display the disassembly output, either bytecode or the assembler, depending on what you asked for.
+
+** Help-instrument
+
+The last one taken from Helpful. Adds a command to toggle the function instrumentation for Edebug and Trace.
+
+** Help-buffer-faces
+
+Display a list of all faces used in a buffer. A small utility that complements the built-in `describe-face'.
+
+*** Usage
+
+This exports only a single command which you can call either via M-x, or bind to a shortcut of your choice. For example:
+
+M-x describe-buffer-faces RET
+
+
+
+* Installation
+
+* Usage
+
+* License
