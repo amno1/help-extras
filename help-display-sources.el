@@ -21,31 +21,20 @@
 ;;; Commentary:
 
 ;;; Code:
-
-;;; Customize
+
+;; silence byte-compiler
 (defgroup help nil
   "This adds to built-in help-mode so we put all defcustoms in same group."
   :prefix "helper-"
   :group 'help)
-
-
-;;; Private
 
 (eval-when-compile
   (require 'help-fns)
   (require 'help-mode)
   (require 'find-func))
 
-(defvar help-display-source-mnode) ;; forward declaration
-
-(defmacro with-help-buffer (&rest body)
-  "Execuate BODY in the context of `help-buffer'."
-  (declare (indent 0) (debug t))
-  `(let ((help-buffer (help-buffer)))
-     (when (get-buffer-window help-buffer)
-       (with-current-buffer help-buffer
-         (with-silent-modifications
-           (save-excursion ,@body))))))
+(eval-when-compile
+  (require 'help-extras "help-extras.el"))
 
 ;;; Advised functions
 
@@ -60,8 +49,8 @@
 (defun helper--describe-function (fn &rest args)
   (apply fn args)
   (with-help-buffer
-    (plist-put help-mode--current-data :caller 'describe-function)
     (when (bound-and-true-p help-display-source-mode)
+      (plist-put help-mode--current-data :caller 'describe-function)
       (goto-char (point-max))
       (let ((src (helper--source-fn)))
         (when src (insert "\n" src))))))
@@ -69,9 +58,9 @@
 (defun helper--describe-variable (fn &rest args)
   (apply fn args)
   (with-help-buffer
-   (plist-put help-mode--current-data :caller 'describe-variable)
    (when (bound-and-true-p help-display-source-mode)
-      (goto-char (point-max))
+     (plist-put help-mode--current-data :caller 'describe-variable)
+     (goto-char (point-max))
       (let ((src (helper--source-fn)))
         (when src (insert "\n" src))))))
 
