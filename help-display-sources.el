@@ -22,50 +22,59 @@
 
 ;;; Code:
 
+
+;;; Private
+
 ;; silence byte-compiler
 (defgroup help nil
   "This adds to built-in help-mode so we put all defcustoms in same group."
   :prefix "helper-"
   :group 'help)
 
-(eval-when-compile
-  (require 'help-fns)
-  (require 'help-mode)
-  (require 'find-func))
+(require 'trace)
+(require 'elp)
+(require 'disass)
+(require 'help-fns)
+(require 'help-mode)
+(require 'find-func)
+(require 'text-property-search)
 
-(eval-when-compile
-  (require 'help-extras "help-extras.el"))
+(defvar helper--post-insert-function)
+
+(defmacro with-help-buffer (&rest body)
+  "Execuate BODY in the context of `help-buffer'."
+  (declare (indent 0) (debug t))
+  `(let ((help-buffer (help-buffer)))
+     (when (get-buffer-window help-buffer)
+       (with-current-buffer help-buffer
+         (with-silent-modifications
+           (save-excursion ,@body))))))
 
 ;;; Advised functions
 
 (defun helper--describe-symbol (fn &rest args)
+  "Advice for `describe-symbol'"
   (apply fn args)
   (plist-put help-mode--current-data :caller 'describe-symbol)
-  (when (bound-and-true-p help-display-source-mode)
-    (goto-char (point-max))
-    (let ((src (helper--source-fn)))
-      (when src (insert "\n" src)))))
+  (funcall helper--post-insert-function))
 
 (defun helper--describe-function (fn &rest args)
+  "Advice for `describe-function'"
   (apply fn args)
-  (with-help-buffer
-    (when (bound-and-true-p help-display-source-mode)
-      (plist-put help-mode--current-data :caller 'describe-function)
-      (goto-char (point-max))
-      (let ((src (helper--source-fn)))
-        (when src (insert "\n" src))))))
+  (plist-put help-mode--current-data :caller 'describe-function)
+  (funcall helper--post-insert-function))
 
 (defun helper--describe-variable (fn &rest args)
+  "Advice for `describe-variable'"
   (apply fn args)
-  (with-help-buffer
-   (when (bound-and-true-p help-display-source-mode)
-     (plist-put help-mode--current-data :caller 'describe-variable)
-     (goto-char (point-max))
-      (let ((src (helper--source-fn)))
-        (when src (insert "\n" src))))))
+  (plist-put help-mode--current-data :caller 'describe-variable)
+  (funcall helper--post-insert-function))
 
 ;;; Fetchers
 (defun helper--fetch-c-src (symbol type file)
+  "Fetch source code for SYMBOL from a C file FILE.
+
+TEYPE is either \\\\='function or \\\\='variable"
   (let (src beg)
     (setq file (expand-file-name file source-directory))
     (when (file-readable-p file)
@@ -101,6 +110,9 @@
     src))
 
 (defun helper--fetch-lisp-src (symbol type file)
+  "Fetch source code for SYMBOL from a Lisp file FILE.
+
+TEYPE is either \\\\='function or \\\\='variable"
   (let (src pos)
     (when file
       (setq file (or file (find-lisp-object-file-name symbol type)))
@@ -116,7 +128,8 @@
           (setq src (buffer-string)))))
     src))
 
-(defun helper--source-fn ()
+(defun helper--source-function ()
+  "Fetch sources for a current symbol in `help-buffer'"
   (let* ((file (plist-get help-mode--current-data :file))
          (type (plist-get help-mode--current-data :type))
          (sym (plist-get help-mode--current-data :symbol))
@@ -129,12 +142,61 @@
                     (string-suffix-p ".elc" file))
                 (helper--fetch-lisp-src sym type file))
                ((string-suffix-p ".c" file)
-                (helper--fetch-c-src sym type file))
-               (t
-                "Source code not available."))))
+                (helper--fetch-c-src sym type file)))))
     (if src
         (format "\n%s\n" src)
-      "")))
+      "Source code not available.")))
+
+(defun helper--display-source-function ()
+  "Inserts fetched source code for current symbol into `help-buffer'"
+  (with-help-buffer
+    (let ((src (helper--source-function)))
+      (when src
+        (goto-char (point-min))
+        (if (text-property-search-forward 'helper-data)
+            (delete-region (1- (point)) (point-max))
+          (goto-char (point-max)))
+        (insert (propertize "\n" 'helper-data (point)) src)))))
+
+(defun helper--display-properties-function ()
+  "Fetch and insert symbol properties for the currrent symbol in `help-buffer'"
+  (with-help-buffer
+    (let ((props (symbol-plist (plist-get help-mode--current-data :symbol))))
+      (when props
+        (goto-char (point-min))
+        (if (text-property-search-forward 'helper-data)
+            (delete-region (1- (point)) (point-max))
+          (goto-char (point-max)))
+        (insert (propertize "\n" 'helper-data (point)))
+        (while props
+          (insert (format "%s\n  %S\n"
+                          (propertize (symbol-name (car props))
+                                      'face 'font-lock-constant-face)
+                          (cadr props)))
+          (setq props (cddr props)))))))
+
+(defun helper--dissassembly-function ()
+  "Dissasemble the current symbol in `help-buffer'"
+  (with-temp-buffer
+    (let ((sym (with-help-buffer
+                 (plist-get help-mode--current-data :symbol))))
+      (if (and (consp sym) (not (functionp sym)))
+          (setq sym `(lambda () ,sym)))
+      (disassemble-internal sym 0 nil)
+      (delay-mode-hooks (funcall 'asm-mode))
+      (with-no-warnings (font-lock-fontify-buffer)))
+    (buffer-string)))
+
+(defun helper--display-dissassembly-function ()
+  "Display dissasembly for the current symbol in `help-buffer'"
+  (with-help-buffer
+    (let ((src (helper--dissassembly-function)))
+      (when src
+        (goto-char (point-min))
+        (if (text-property-search-forward 'helper-data)
+            (delete-region (1- (point)) (point-max))
+          (goto-char (point-max)))
+        (insert (propertize "\n" 'helper-data (point)) src)))))
 
 ;;; Minor mode
 
@@ -145,14 +207,34 @@
    (helper--internal-mode
     (advice-add 'describe-symbol :around #'helper--describe-symbol)
     (advice-add 'describe-function :around #'helper--describe-function)
-    (advice-add 'describe-variable :around #'helper--describe-variable))
+    (advice-add 'describe-variable :around #'helper--describe-variable)
+    (setf helper--post-insert-function #'helper--display-source-function))
    (t (advice-remove 'describe-symbol #'helper--describe-symbol)
       (advice-remove 'describe-function #'helper--describe-function)
-      (advice-remove 'describe-variable #'helper--describe-variable))))
+      (advice-remove 'describe-variable #'helper--describe-variable)
+      (makunbound 'helper--post-insert-function))))
 
 ;;;###autoload
 (define-globalized-minor-mode help-display-source-mode
   helper--internal-mode (lambda () (helper--internal-mode)))
+
+
+;; Commands
+
+;;;###autoload
+(defun help-display-properties ()
+  (interactive)
+  (helper--display-properties-function))
+
+;;;###autoload
+(defun help-display-dissassembly ()
+  (interactive)
+  (helper--display-dissassembly-function))
+
+;;;###autoload
+(defun help-display-source ()
+  (interactive)
+  (helper--display-source-function))
 
 (provide 'help-display-sources)
 ;;; help-display-sources.el ends here

@@ -26,6 +26,12 @@
 ;; Completely re-worked to work with the built-in help-mode.
 
 ;;; Code:
+
+;;; Customize
+(defgroup help nil
+  "This adds to built-in help-mode so we put all defcustoms in same group."
+  :prefix "helper-"
+  :group 'help)
 
 ;;;###autoload
 (defun describe-buffer-faces (&optional buffer)
@@ -38,7 +44,7 @@ If not specified, or called interactively, BUFFER defaults to `current-buffer'"
         (help-buffer-under-preparation t)
         (faces nil))
 
-    (help-setup-xref (list #'show-buffer-faces buffer)
+    (help-setup-xref (list 'describe-buffer-faces working-buffer)
                      (called-interactively-p 'interactive))
 
     (save-excursion

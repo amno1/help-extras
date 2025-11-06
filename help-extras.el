@@ -31,22 +31,5 @@
   :prefix "helper-"
   :group 'help)
 
-
-;;; Private
-
-(defvar help-display-source-mode) ;; forward declaration
-
-(defvar helper--post-insert-hook)
-
-(defmacro with-help-buffer (&rest body)
-  "Execuate BODY in the context of `help-buffer'."
-  (declare (indent 0) (debug t))
-  `(let ((help-buffer (help-buffer)))
-     (when (get-buffer-window help-buffer)
-       (with-current-buffer help-buffer
-         (with-silent-modifications
-           (save-excursion ,@body))))))
-
-
 (provide 'help-extras)
 ;;; help-extras.el ends here
