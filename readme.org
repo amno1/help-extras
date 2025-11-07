@@ -1,62 +1,49 @@
 * About
 
-A collection of small utilities that enhance the experience of the built-in `help-mode' in GNU Emacs. Each utility is available to use on its own, and they depend on either each other or any external library. Each one is a minimal and self-contained feature depending only on the built-in features.
-
+A collection of small utilities that add some extra features to the built-in `help-mode' in GNU Emacs. Each utility is available to use on its own. They don't depend on either each other or any external library. Each one is a minimal and self-contained feature depending only on the built-in features.
 
 * Included utilities:
 
 ** Help-remote
 
-Help remote is a "remote control" for help buffer. It let's you manipulate help buffer without switching to it. It is similar concept as in `other-buffer', however it does not use other-buffer, nor does it tamper with the other-buffer mechanism. In some cases it minimizes jumping back and forth between the help buffer and other buffers you work in. It is useful mostly when you want to perform one-time action in help buffer, say navigate the help-buffer history, scroll the buffer, follow a link etc.
+Help remote is a "remote control" for help buffer. It let's you manipulate help buffer without switching to it. It is a similar concept as in `other-buffer'. However it does not use other-buffer, nor does it tamper with the other-buffer mechanism. The idea is to minimize jumping back and forth between the help buffer and a buffer you work in. It is useful mostly when you want to perform one-time action in help buffer, say navigate the help-buffer history, scroll the buffer, follow a link etc.
 
-It builds on my own research about Emacs, and a very tiny library called buffer-remote, included in this package. It is possible to program Emacs commands to be manipulated "remotely", from any other buffer. However, for some reasons, most of commands are not programmed that way, but make an implicit assumption that they will be called from within the same buffer on which they operate.
+It builds on my own research about Emacs, and a very tiny library called buffer-remote, included in this package. It is possible to program Emacs commands to be manipulated "remotely", from other buffers. "Buffer remote", wraps commands in an advice that auto-switches to the "target buffer" before executing the original command. I think it is mostly suitable with unique buffer, i.e. one of the kind, such as help-buffer. It can certainly work with any buffer, but if there are multiple buffers on which a "remote" could work, one has to choose which buffer to operate on, and than it becomes a bit clunky. One can just as well jump to the buffer too.
 
 To use it load help-remote.el in your Emacs, and enable help-remote mode. By default, a "remote" is installed in global map, on C-h h key, but you are free to rebound it to any prefix of your choice. To do this, customnize help-remote-help-prefix-key.
 
 This one is a bit unfinished, some polishing is still needed, you will probably find some incosistencies and bugs. When you do, please let me know, even better, give me a PR.
 
-** Help-menu
+** Help-details
 
-Display the help context menu in non-overlapping window in style of Transient (without using Transient). Unlike Transient which require explicit declaration of menus, this displays the built-in context menus, but in a non-overlapping window similar to Transient or Whichkey. Thus, it provides for the consistency between between the menus in the menubar and the pop-up menu, but displayed in a popular non-overlapping "window menu" style as practicised by Transient and Whichkey.
+Inspired by [[https://github.com/Wilfred/helpful][Helpful]], help-details is a very minimal mode that adds ability to the built-in help-buffer to display the source code of the function or a variable it refers to or property-list of a symbol. From the beginning I also included dissassembly, but I use it myself extremely rarely, so I have removed it.
 
-** Help-display-sources
-
-Inspired by [[https://github.com/Wilfred/helpful][Helpful]], help-display-sources is a minimal mode that adds ability to the built-in help-buffer to display the source code of the function or a variable it refers to.
-
-This feature was helpful to me when I was learning Emacs Lisp. It is probably more convenient to use xref and just pres M-. and M-, to jump back and forth in the source code, if you really want to explore the source code. However, the Helpful feature was in its own very didactic to me. Simply seing the sources when I was looking up references thought me a lot about Emacs. These days, I don't actually use this, but I remember how surprised I was sometimes to see how simple implementation was for some forms I thought were complicated to implement, and vice versa.
-
-In a private implementation I used for a while, I was able to set a variable to fetch only Lisp sources or both Lisp and C, however, to make it simpler and leaner before for this release I have removed that functionality. It was also possible to choose if you would prefer to display source code, symbol properties or dissasembly code, but I don't use that much if at all, so I have removed it.
+Automatically seeing the source code was helpful to me when I was learning Emacs Lisp. It is probably more convenient to use xref and just pres M-. and M-, to jump back and forth in the source code, if you really want to explore the source code. However, the Helpful feature was in its own very didactic to me. Simply seing the sources when I was looking up references thought me a lot about Emacs. These days, I don't actually use this, but I remember how surprised I was sometimes to see how simple implementation was for some forms I thought were complicated to implement, and vice versa.
 
 To use call:
 
-M-x help-display-source-mode RET
+M-x help-details-mode RET
 
 That will toggle on/off the source code display.
 
-There is no custom variables to configure. However, `source-directory' has to be configured properly to the folder wchich contains Emacs source code. Observe also that displaying C sources is not as fast as displaying Lisp sources, and that you have to have Emacs source code somewhere on your computer. If it is too slow for you, don't use this feature.
+Alternatively, if you have loaded the library, you can use:
 
-** Help-dissasemble
+M-x help-display-source
+M-x help-display-properties
+M-x help-display-dissassembly
 
-Another feature inspired by Helpful. Display the disassembly output, either bytecode or the assembler, depending on what you asked for.
+There is no custom variables to configure. Observe also that displaying C sources is not as fast as displaying Lisp sources, and that you have to have Emacs source code somewhere on your computer. If it is too slow for you, don't use this feature. If `source-directory' is configured properly to the folder wchich contains Emacs source code, I think it is also much faster, than if Emacs has to decompress compressed source it normally installs. 
 
-** Help-instrument
+If you don't want the source code display to be always on, you can still use the functions, but the souce will not be automatically displayed.
 
-The last one taken from Helpful. Adds a command to toggle the function instrumentation for Edebug and Trace.
+** help-buffer-faces
 
-** Help-buffer-faces
-
-Display a list of all faces used in a buffer. A small utility that complements the built-in `describe-face'.
-
-*** Usage
+Display a list of all faces used in a buffer. This is a small utility that complements the built-in `describe-face'. 
 
 This exports only a single command which you can call either via M-x, or bind to a shortcut of your choice. For example:
 
 M-x describe-buffer-faces RET
 
-
-
 * Installation
-
-* Usage
 
 * License

@@ -1,4 +1,4 @@
-;;; help-display-sources.el --- Display source code for items in help buffer  -*- lexical-binding: t; -*-
+;;; help-details.el --- Display source code for items in help buffer  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  Arthur Miller
 
@@ -25,14 +25,11 @@
 
 ;;; Private
 
-;; silence byte-compiler
 (defgroup help nil
   "This adds to built-in help-mode so we put all defcustoms in same group."
   :prefix "helper-"
   :group 'help)
 
-(require 'trace)
-(require 'elp)
 (require 'disass)
 (require 'help-fns)
 (require 'help-mode)
@@ -51,7 +48,6 @@
            (save-excursion ,@body))))))
 
 ;;; Advised functions
-
 (defun helper--describe-symbol (fn &rest args)
   "Advice for `describe-symbol'"
   (apply fn args)
@@ -199,7 +195,6 @@ TEYPE is either \\\\='function or \\\\='variable"
         (insert (propertize "\n" 'helper-data (point)) src)))))
 
 ;;; Minor mode
-
 (define-minor-mode helper--internal-mode
   "Extensions for built-in help-mode."
   :global nil :lighter nil
@@ -215,7 +210,7 @@ TEYPE is either \\\\='function or \\\\='variable"
       (makunbound 'helper--post-insert-function))))
 
 ;;;###autoload
-(define-globalized-minor-mode help-display-source-mode
+(define-globalized-minor-mode help-details-mode
   helper--internal-mode (lambda () (helper--internal-mode)))
 
 
@@ -223,18 +218,21 @@ TEYPE is either \\\\='function or \\\\='variable"
 
 ;;;###autoload
 (defun help-display-properties ()
+  "Display property list for the symbol currently visible in `help-mode'"
   (interactive)
   (helper--display-properties-function))
 
 ;;;###autoload
 (defun help-display-dissassembly ()
+  "Display dissassembly for the symbol currently visible in `help-mode'"
   (interactive)
   (helper--display-dissassembly-function))
 
 ;;;###autoload
 (defun help-display-source ()
+  "Display source-code for the symbol currently visible in `help-mode'"
   (interactive)
   (helper--display-source-function))
 
-(provide 'help-display-sources)
-;;; help-display-sources.el ends here
+(provide 'help-details)
+;;; help-details.el ends here

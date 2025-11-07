@@ -33,6 +33,7 @@
 (defgroup help nil
   "This adds to built-in help-mode so we put all defcustoms in same group."
   :prefix "helper-"
+  :prefix "help-"
   :group 'help)
 
 (defvar helper--remote-advised nil

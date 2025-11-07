@@ -23,20 +23,24 @@
 ;;
 
 ;;; Code:
+(defgroup buffer-remote nil
+  "This adds to built-in help-mode so we put all defcustoms in same group."
+  :prefix "remote-"
+  :group 'convenience)
 
 (defun remote--make-advice-body (buffer-name)
   "Create lambda function for buffer with name BUFFER-NAME."
-  #'(lambda (fn &rest args)
-      (let ((previous (selected-window))
-            (buffer (get-buffer buffer-name))
-            (window (get-buffer-window buffer-name)))
-        (unwind-protect
-            (when (get-buffer buffer)
-              (unless (window-live-p window)
-                (display-buffer buffer))
-              (select-window window)
-              (apply fn args))
-          (select-window previous)))))
+  (lambda (fn &rest args)
+    (let ((previous (selected-window))
+          (buffer (get-buffer buffer-name))
+          (window (get-buffer-window buffer-name)))
+      (unwind-protect
+          (when (get-buffer buffer)
+            (unless (window-live-p window)
+              (display-buffer buffer))
+            (select-window window)
+            (apply fn args))
+        (select-window previous)))))
 
 (defun remote--make-advice-function (buffer-name)
   "Create advice function for buffer with name BUFFER-NAME."
