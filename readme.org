@@ -36,7 +36,7 @@ M-x help-display-dissassembly
 
 There is no custom variables to configure. Observe also that displaying C sources is not as fast as displaying Lisp sources, and that you have to have Emacs source code somewhere on your computer. If it is too slow for you, don't use this feature. If `source-directory' is configured properly to the folder wchich contains Emacs source code, I think it is also much faster, than if Emacs has to decompress compressed source it normally installs. 
 
-If you don't want the source code display to be always on, you can still use the functions, but the souce will not be automatically displayed.
+If you don't want the source code display to be always on, you can still use the functions, but the source will not be automatically displayed.
 
 ** help-buffer-faces
 
