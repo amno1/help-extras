@@ -29,7 +29,9 @@ That will toggle on/off the source code display.
 Alternatively, if you have loaded the library, you can use:
 
 M-x help-display-source
+
 M-x help-display-properties
+
 M-x help-display-dissassembly
 
 There is no custom variables to configure. Observe also that displaying C sources is not as fast as displaying Lisp sources, and that you have to have Emacs source code somewhere on your computer. If it is too slow for you, don't use this feature. If `source-directory' is configured properly to the folder wchich contains Emacs source code, I think it is also much faster, than if Emacs has to decompress compressed source it normally installs. 
@@ -44,6 +46,3 @@ This exports only a single command which you can call either via M-x, or bind to
 
 M-x describe-buffer-faces RET
 
-* Installation
-
-* License
