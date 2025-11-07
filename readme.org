@@ -10,13 +10,13 @@ Help remote is a "remote control" for help buffer. It let's you manipulate help 
 
 To control buffers from other buffers, buffer-remote, wraps commands in an advice that auto-switches to the target buffer before executing the original command. I think it is mostly suitable for a case of unique buffers, i.e. when there is just one of a kind, such as help-buffer. It can certainly work with any buffer, but if there are multiple buffers on which a "remote" could work, one has to choose which buffer to operate on, and than it becomes a bit clunky. One can just as well switch to the buffer too, if one has to choose which one to use, so it sort of defeats the purpose. Observe, that one can also have multiple help buffers if you really want to, but this supposes that you work with just single help buffer as in the default Emacs configuration.
 
-To use it load help-remote.el in your Emacs, and enable help-remote mode. By default, a "remote" is installed in global map, on C-h h key, but you are free to rebound it to any prefix of your choice. To do this, customnize help-remote-help-prefix-key.
+To use it load help-remote.el in your Emacs, and enable help-remote mode. By default, a "remote" is installed in global map, on C-h h key, but you are free to rebound it to any prefix of your choice. To do this, customize help-remote-help-prefix-key.
 
 This one is a bit unfinished, some polishing is still needed, you will probably find some incosistencies and bugs. When you do, please let me know, even better, give me a PR.
 
 ** Help-details
 
-Inspired by [[https://github.com/Wilfred/helpful][Helpful]], help-details is a very minimal mode that adds ability to the built-in help-buffer to display the source code of the function or a variable it refers to or property-list of a symbol. From the beginning I also included dissassembly, but I use it myself extremely rarely, so I have removed it.
+Inspired by [[https://github.com/Wilfred/helpful][Helpful]], help-details is a very minimal mode that adds ability to the built-in help-buffer to display the source code of the function or a variable it refers to or property-list of a symbol.
 
 Automatically seeing the source code was helpful to me when I was learning Emacs Lisp. It is probably more convenient to use xref and just pres M-. and M-, to jump back and forth in the source code, if you really want to explore the source code. However, the Helpful feature was in its own very didactic to me. Simply seing the sources when I was looking up references thought me a lot about Emacs. These days, I don't actually use this, but I remember how surprised I was sometimes to see how simple implementation was for some forms I thought were complicated to implement, and vice versa.
 
