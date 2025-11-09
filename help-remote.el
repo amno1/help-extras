@@ -26,7 +26,7 @@
 (require 'pcase)
 (require 'help-mode)
 (eval-and-compile
-  (require 'buffer-remote (expand-file-name "buffer-remote.el")))
+  (require 'buffer-remote))
 
 
 ;;; Customize

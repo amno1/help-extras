@@ -212,7 +212,6 @@ TEYPE is either \\\\='function or \\\\='variable"
 ;;;###autoload
 (define-globalized-minor-mode help-details-mode
   helper--internal-mode (lambda () (helper--internal-mode)))
-
 
 ;; Commands
 
