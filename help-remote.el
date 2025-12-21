@@ -4,6 +4,7 @@
 
 ;; Author: Arthur Miller <arthur.miller@live.com>
 ;; Keywords: tools
+;; Version: 1.00
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,7 +21,7 @@
 
 ;;; Commentary:
 
-;;
+;; A "remote control" to help buffer. Helps minimize switching between windows.
 
 ;;; Code:
 (require 'pcase)
@@ -30,7 +31,7 @@
 
 
 ;;; Customize
-(defgroup help nil
+(defgroup help-remote nil
   "This adds to built-in help-mode so we put all defcustoms in same group."
   :prefix "helper-"
   :prefix "help-"
